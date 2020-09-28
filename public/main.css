@@ -1,0 +1,71 @@
+﻿body {
+    font-family: 'Nunito', sans-serif;
+}
+
+h2 {
+    margin-left: 5px;
+    padding: 0px;
+    max-width: 210px;
+    text-align: center;
+    color: #40b9c1;
+}
+
+#chat-container {
+    width: 210px;
+    height: 340px;
+    margin: 5px;
+    border-radius: 12px;
+    box-shadow: 1px 3px 5px rgba(0,0,0,0);
+    font-family: 'Nunito', sans-serif;
+    float: left;
+}
+
+#chat-window {
+    padding: 5px 2px;
+    border-bottom: 1px solid #e9e9e9;
+    background-color: #F9F9F9;
+    border-radius: 12px 12px 0 0;
+    color: #555;
+    height: 291px;
+    overflow-y: auto;
+    font-family: 'Nunito', sans-serif;
+}
+
+#output p {
+    color: #aaa;
+    padding: 0 2px;
+    margin: 1px 8px;
+    font-family: 'Nunito', sans-serif;
+}
+
+#message {
+    padding: 10px 10px;
+    box-sizing: border-box;
+    border: 0;
+    background: #eee;
+    display: block;
+    width: 100%;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+    border-radius: 0 0 12px 12px;
+}
+
+#username {
+    padding: 10px 10px;
+    box-sizing: border-box;
+    border: 0;
+    background: #eee;
+    width: 210px;
+    margin-top: 12px;
+    border-radius: 12px;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+    float: left;
+}
+
+canvas {
+    float: right;
+    margin: auto;
+    padding: 1px 330px 10px 10px;
+    position: absolute
+}
