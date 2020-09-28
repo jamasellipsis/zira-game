@@ -1,1 +1,1 @@
-# zira-game
+# zira-games
