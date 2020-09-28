@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # zira-game
 
 ## Instalation
@@ -18,6 +17,3 @@ npm i nodemon -D
 ```sh
 npm run dev
 ```
-=======
-# zira-games
->>>>>>> c2c2b5188b22fe7f40ac919c6edcb6d0dbc6a37b
