@@ -50,3 +50,10 @@ div {
     font-family: 'Nunito', sans-serif;
     border-radius: 0 0 12px 12px;
 }
+
+canvas {
+    float: right;
+    margin: auto;
+    padding: 1px 330px 10px 10px;
+    position: absolute
+}
