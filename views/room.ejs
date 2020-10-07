@@ -12,13 +12,17 @@
   </script>
   <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script defer src="script.js"></script>
+  
 </head>
 <body>
 <h2>Zira</h2>
   
   <form id="send-container">
   <div id="message-container"></div>
-    <input type="text" id="message-input" placeholder ="Enter Message">
+    <input type="text" id="message-input" placeholder ="Enter Message" autocomplete = off>
   </form>
+
+  <script src="phaser.min.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
