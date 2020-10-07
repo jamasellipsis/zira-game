@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
+const players = {};
 
 app.set('views', './views')
 app.set('view engine', 'ejs')
@@ -34,6 +35,27 @@ app.get('/:room', (req, res) => {
 server.listen(3000)
 
 io.on('connection', socket => {
+    console.log('a user connected');
+    players[socket.id] = {
+        x: Math.floor(Math.random() * 700) + 50,
+        y: Math.floor(Math.random() * 500) + 50,
+        playerId: socket.id,
+        team: (Math.floor(Math.random() * 2) == 0) ? 'red' : 'blue'
+    };
+    socket.emit('currentPlayers', players);
+    socket.broadcast.emit('newPlayer', players[socket.id]);
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
+        delete players[socket.id];
+        io.emit('disconnect', socket.id);
+    });
+    socket.on('playerMovement', function (movementData) {
+        players[socket.id].x = movementData.x;
+        players[socket.id].y = movementData.y;
+        // emit a message to all players about the player that moved
+        socket.broadcast.emit('playerMoved', players[socket.id]);
+    })
+
   socket.on('new-user', (room, name) => {
     socket.join(room)
     rooms[room].users[socket.id] = name
