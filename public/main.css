@@ -57,3 +57,15 @@ canvas {
     padding: 1px 330px 10px 10px;
     position: absolute
 }
+
+#name-input {
+    padding: 10px 10px;
+    box-sizing: border-box;
+    border: 0;
+    background: #eee;
+    width: 205px;
+    border-radius: 12px;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+    float: left;
+}
