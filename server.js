@@ -35,32 +35,41 @@ app.get('/:room', (req, res) => {
 server.listen(3000)
 
 io.on('connection', socket => {
-    console.log('a user connected');
+  socket.on('new-user', (room, name) => {
+    console.log('User joined a room ' + room);
+    socket.join(room, () => {
+      let rooms = Object.keys(socket.rooms);
+    });
+    rooms[room].users[socket.id] = name
+    // socket.to(room).broadcast.emit('user-connected', name)
+
     players[socket.id] = {
-        x: Math.floor(Math.random() * 700) + 50,
-        y: Math.floor(Math.random() * 500) + 50,
+      x: Math.floor(Math.random() * 700) + 50,
+      y: Math.floor(Math.random() * 500) + 50,
+      playerRoom: {
+        roomName: room,
         playerId: socket.id,
-        team: (Math.floor(Math.random() * 2) == 0) ? 'red' : 'blue'
+      },
     };
-    socket.emit('currentPlayers', players);
-    socket.broadcast.emit('newPlayer', players[socket.id]);
+    
+    console.log("My player id is " + players[socket.id].playerRoom.playerId + " and my room is " + players[socket.id].playerRoom.roomName);
+    socket.to(players[socket.id].playerRoom.roomName).emit('currentPlayers', players);
+    socket.to(players[socket.id].playerRoom.roomName).broadcast.emit('newPlayer', players[socket.id]);
     socket.on('disconnect', function () {
-        console.log('user disconnected');
-        delete players[socket.id];
-        io.emit('disconnect', socket.id);
+      console.log('user disconnected');
+      delete players[socket.id];
+      io.emit('disconnect', socket.id);
     });
     socket.on('playerMovement', function (movementData) {
-        players[socket.id].x = movementData.x;
-        players[socket.id].y = movementData.y;
-        // emit a message to all players about the player that moved
-        socket.broadcast.emit('playerMoved', players[socket.id]);
+      players[socket.id].x = movementData.x;
+      players[socket.id].y = movementData.y;
+      // emit a message to all players about the player that moved
+      socket.to(players[socket.id].playerRoom.roomName).broadcast.emit('playerMoved', players[socket.id]);
     })
-
-  socket.on('new-user', (room, name) => {
-    socket.join(room)
-    rooms[room].users[socket.id] = name
-    socket.to(room).broadcast.emit('user-connected', name)
   })
+  
+  
+
   socket.on('send-chat-message', (room, message) => {
     socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
   })

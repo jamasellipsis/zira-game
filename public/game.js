@@ -24,16 +24,18 @@ game.init = function () {
 
 function preload () {
     this.load.spritesheet('player', 'assets/spritexb-3320.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('sky', 'public/assets/sky.png');
+    this.load.image('bg', 'assets/background.jpeg');
 }
 
 function create () {
     let self = this;
     this.socket = io();
     this.otherPlayers = this.physics.add.group();
+    this.cursors = this.input.keyboard.createCursorKeys();
+    addBackground(self);
     this.socket.on('currentPlayers', function (players) {
         Object.keys(players).forEach(function (id) {
-            if (players[id].playerId === self.socket.id) {
+            if (players[id].playerRoom.playerId === self.socket.id) {
                 addPlayer(self, players[id]);
             } else {
                 addOtherPlayers(self, players[id]);
@@ -92,8 +94,6 @@ function create () {
         frames: [ { key: 'player', frame: 0}],
         frameRate: 20,
     })
-
-    this.cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update () {
@@ -136,4 +136,8 @@ function addOtherPlayers (self, playerInfo) {
     const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'player').setOrigin(0, 0).setDisplaySize(38, 42);
     otherPlayer.playerId = playerInfo.playerId;
     self.otherPlayers.add(otherPlayer);
+}
+
+function addBackground (self) {
+    self.background = self.add.image(0, 0, 'bg').setOrigin(0, 0).setDisplaySize(800, 500);
 }
