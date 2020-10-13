@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
+    </head>
+    <body>
+        <div id="game"></div>
+        <script>
+            const phaserConfig = {
+                type: Phaser.AUTO,
+                parent: "game",
+                width: 1300,
+                height: 600,
+                backgroundColor: "#E7F6EF",
+                physics: {
+                    default: 'arcade',
+                    arcade: {
+                        debug: false,
+                    }
+                },
+                dom: {
+                    createContainer: true
+                },
+                scene: {
+                    init: initScene,
+                    preload: preloadScene,
+                    create: createScene,
+                    update: updateScene
+                }
+            }
+
+            const game = new Phaser.Game(phaserConfig);
+
+            function initScene() {
+                this.socket = io("http://localhost:3000", { autoConnect: false });
+                this.chatMessages = [];
+            }
+
+            function preloadScene() {
+                this.load.html("form", "form.html");
+                this.load.image('bg', 'assets/background.jpeg');
+                this.load.spritesheet('player', 'assets/spritexb-3320.png', { frameWidth: 32, frameHeight: 48 });
+            }
+
+            function createScene() {
+                this.textInput = this.add.dom(1200, 580).createFromCache("form").setOrigin(0.5);
+                this.chat = this.add.text(1065, 10, "", {
+                    lineSpacing: 15,
+                    backgroundColor: "#21313CDD",
+                    color: "#40b9c1",
+                    padding: 10,
+                    fontStyle: "bold"
+                });
+                this.chat.setFixedSize(270, 645);
+                this.chat.setDepth(1);
+
+                // Player
+                this.bg = this.add.image(0, 0, 'bg').setOrigin(0, 0).setDisplaySize(1300, 600);
+                this.player = this.physics.add.sprite(20, 20, 'player').setOrigin(0, 0)
+                    .setDisplaySize(38, 42)
+                    .setCollideWorldBounds(true);
+
+
+                this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+                this.enterKey.on("down", event => {
+                    let chatBox = this.textInput.getChildByName("chat");
+                    if (chatBox.value != "") {
+                        this.socket.emit("message", chatBox.value);
+                        chatBox.value = "";
+                    }
+                });
+
+                this.socket.connect();
+
+                this.socket.on("connect", async () => {
+                    this.socket.emit("join", "test01");
+                });
+
+                this.socket.on("joined", async (gameId) => {
+                    // let result = await fetch(`http://localhost:3000/chats?room=${gameId}`)
+                    //     .then(response => response.json());
+                    // this.chatMessages = result.messages;
+                    this.chatMessages.push("Welcome to your class!");
+                    if (this.chatMessages.length > 20) {
+                        this.chatMessages.shift();
+                    }
+                    this.chat.setText(this.chatMessages);
+                    console.log(gameId);
+                });
+
+                this.socket.on("message", (message) => {
+                    this.chatMessages.push(message);
+                    if (this.chatMessages.length > 20) {
+                        this.chatMessages.shift();
+                    }
+                    this.chat.setText(this.chatMessages);
+                });
+            }
+
+            function updateScene() {
+
+            }
+
+            
+        </script>
+    </body>
+</html>

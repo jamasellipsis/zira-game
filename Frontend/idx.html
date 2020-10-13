@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <main class="join-main">
+            <form action="game.html">
+                <div class="form-control">
+                    <label for="username">Your full name: </label>
+                    <input type="text" name="username" id="username"
+                        placeholder="Enter username..."
+                        required
+                    />
+                </div>
+                <div class="form-control">
+                    <label for="room">Room</label>
+                    <input type="text" name="your_room" id="Room"
+                        placeholder="Enter the Room ID..."
+                        required
+                    />
+                </div>
+                <button type="submit" class="button">Join Room</button>
+                <button type="submit" class="button">Create Room</button>
+            </form>
+        </main>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
+    </body>
+</html>
