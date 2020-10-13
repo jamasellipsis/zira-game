@@ -9,12 +9,12 @@ git clone https://github.com/jamasellipsis/zira-game.git
 ```
 npm install
 ```
-**Open two terminals one in Backend and the other in frontend:
-**For the terminal in Backend execute:
+* Open two terminals one in Backend and the other in frontend:
+* For the terminal in Backend execute:
 ```sh
 node main.js
 ```
-**For the terminal in Frontend execute:
+* For the terminal in Frontend execute:
 ```sh
 serve
 ```
