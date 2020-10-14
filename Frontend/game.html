@@ -7,6 +7,7 @@
     <body>
         <div id="game"></div>
         <script>
+            let inputUsername = localStorage.getItem("username");
             const phaserConfig = {
                 type: Phaser.AUTO,
                 parent: "game",
@@ -61,12 +62,11 @@
                     .setDisplaySize(38, 42)
                     .setCollideWorldBounds(true);
 
-
                 this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
                 this.enterKey.on("down", event => {
                     let chatBox = this.textInput.getChildByName("chat");
                     if (chatBox.value != "") {
-                        this.socket.emit("message", chatBox.value);
+                        this.socket.emit("message", inputUsername + ": " + chatBox.value);
                         chatBox.value = "";
                     }
                 });
@@ -78,15 +78,14 @@
                 });
 
                 this.socket.on("joined", async (gameId) => {
-                    // let result = await fetch(`http://localhost:3000/chats?room=${gameId}`)
-                    //     .then(response => response.json());
-                    // this.chatMessages = result.messages;
                     this.chatMessages.push("Welcome to your class!");
                     if (this.chatMessages.length > 20) {
                         this.chatMessages.shift();
                     }
                     this.chat.setText(this.chatMessages);
                     console.log(gameId);
+                    let inputUsername = localStorage["username"];
+                    console.log(inputUsername);
                 });
 
                 this.socket.on("message", (message) => {
@@ -96,13 +95,62 @@
                     }
                     this.chat.setText(this.chatMessages);
                 });
+
+
+                // =========== ANIMATIONS START=============
+                this.anims.create({
+                    key: "left",
+                    frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+                    frameRate: 10,
+                    repeat: 0,
+                });
+
+                this.anims.create({
+                    key: "right",
+                    frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }),
+                    frameRate: 10,
+                    repeat: 0,
+                });
+
+                this.anims.create({
+                    key: "up",
+                    frames: this.anims.generateFrameNumbers('player', { start: 12, end: 15 }),
+                    frameRate: 10,
+                    repeat: 0,
+                });
+
+                this.anims.create({
+                    key: "down",
+                    frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+                    frameRate: 10,
+                    repeat: 0,
+                });
+                // =========== ANIMATIONS END =============
             }
 
             function updateScene() {
+                this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+                this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+                this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+                this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
+                if (this.keyLeft.isDown) {
+                    this.player.anims.play('left', true);
+                    this.player.x -= 2;
+                } else if (this.keyRight.isDown) {
+                    this.player.anims.play('right', true);
+                    this.player.x += 2;
+                } else if (this.keyUp.isDown) {
+                    this.player.anims.play('up', true);
+                    this.player.y -= 2;
+                } else if (this.keyDown.isDown) {
+                    this.player.anims.play('down', true);
+                    this.player.y += 2;
+                } else {
+                    this.player.setVelocity(0, 0);
+                }
             }
 
-            
         </script>
     </body>
 </html>

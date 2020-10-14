@@ -5,7 +5,7 @@
     </head>
     <body>
         <main class="join-main">
-            <form action="game.html">
+            <form method="link" action="game.html">
                 <div class="form-control">
                     <label for="username">Your full name: </label>
                     <input type="text" name="username" id="username"
@@ -20,11 +20,16 @@
                         required
                     />
                 </div>
-                <button type="submit" class="button">Join Room</button>
-                <button type="submit" class="button">Create Room</button>
+                <button type="submit" id="submit-join" class="button" onclick="getUsername()">Join Room</button>
+                <button type="submit" id="submit-create" class="button" onclick="getUsername()">Create Room</button>
             </form>
+            <script>
+                function getUsername() {
+                    var usrName = document.getElementById("username").value;
+                    localStorage.setItem("username", usrName);
+                }
+            </script>
         </main>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
     </body>
