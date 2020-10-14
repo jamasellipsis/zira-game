@@ -16,5 +16,8 @@ node main.js
 ```
 * For the terminal in Frontend execute:
 ```sh
+npm install -g serve
+```
+```sh
 serve
 ```
