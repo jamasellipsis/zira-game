@@ -3,9 +3,37 @@
     <head>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+        <style>
+            * {
+                font-family: 'Nunito', sans-serif;
+            }
+            h1 {
+                width: 100px;
+                float: left;
+                text-align: center;
+            }
+            #whiteboard {
+                display: none;
+                width: 1300px;
+                height: 600px;
+                background-color: lightgray;
+                margin-top: 63px;
+            }
+        </style>
     </head>
     <body>
+        <div>
+            <h1>Zira</h1>
+            <input type="button" value="Game" onclick="showGame();" />
+            <input type="button" value="Whiteboard" onclick="showWhiteboard();" />
+        </div>
         <div id="game"></div>
+        <div id="whiteboard">
+            <h2>
+                WhiteBoard goes here
+            </h2>
+        </div>
         <script>
             const phaserConfig = {
                 type: Phaser.AUTO,
@@ -172,16 +200,16 @@
                 if (this.player) {
                     if (this.keyLeft.isDown) {
                         this.player.anims.play('left', true);
-                        this.player.x -= 20;
+                        this.player.x -= 10;
                     } else if (this.keyRight.isDown) {
                         this.player.anims.play('right', true);
-                        this.player.x += 20;
+                        this.player.x += 10;
                     } else if (this.keyUp.isDown) {
                         this.player.anims.play('up', true);
-                        this.player.y -= 20;
+                        this.player.y -= 10;
                     } else if (this.keyDown.isDown) {
                         this.player.anims.play('down', true);
-                        this.player.y += 20;
+                        this.player.y += 10;
                     } else {
                         this.player.setVelocity(0, 0);
                     }
@@ -212,6 +240,17 @@
                     .setDisplaySize(38, 42);
                 otherPlayer.playerId = playerInfo.playerId;
                 self.otherPlayers.add(otherPlayer);
+            }
+
+            // Show and hide Game, Whiteboard
+            function showGame() {
+                document.getElementById('game').style.display = "block";
+                document.getElementById('whiteboard').style.display = "none";
+            }
+
+            function showWhiteboard() {
+                document.getElementById('game').style.display = "none";
+                document.getElementById('whiteboard').style.display = "block";
             }
         </script>
     </body>
