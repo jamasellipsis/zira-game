@@ -9,13 +9,11 @@ express.use(cors());
 
 io.on("connection", (socket) => {
     players[socket.id] = {
-        // x: Math.floor(Math.random() * 700) + 50,
-        // y: Math.floor(Math.random() * 500) + 50,
         x: 20,
         y: 20,
         playerId: socket.id,
         playerAnim: {},
-        
+        gameId: ''
     };
     socket.on("join", async (gameId) => {
         try {
@@ -24,6 +22,7 @@ io.on("connection", (socket) => {
             socket.activeRoom = gameId;
 
             socket.emit("joined", players, gameId);
+            players[socket.id].gameId = gameId;
             socket.to(socket.activeRoom).broadcast.emit('newPlayer', players[socket.id]);
         } catch (err) {
             console.error(err);
@@ -40,6 +39,7 @@ io.on("connection", (socket) => {
         players[socket.id].x = movementData.x;
         players[socket.id].y = movementData.y;
         // emit a message to all players about the player that moved
+        players[socket.id].playerAnim = movementData.playerAnim;
         socket.to(socket.activeRoom).broadcast.emit('playerMoved', players[socket.id]);
     })
 
