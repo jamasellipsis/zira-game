@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script defer src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
+        <script src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
         <style>
             * {
@@ -38,17 +38,18 @@
         <style>
             #video-grid {
               display: grid;
-              grid-template-columns: repeat(auto-fill, 150px);
+              grid-template-columns: repeat(auto-fill, 160px);
               grid-auto-rows: 150px;
             }
             
             video {
               width: 100%;
               height: 100%;
-              object-fit: cover;
+              object-fit: contain;
             }
         </style>
         <div id="game"></div>
+        
         <script>
             const phaserConfig = {
                 type: Phaser.AUTO,
@@ -73,15 +74,53 @@
                 }
             }
 
+            const socket = io("http://localhost:3000", { autoConnect: false });
             const game = new Phaser.Game(phaserConfig);
             let idGame;
             const videoGrid = document.getElementById('video-grid')
             const myVideo = document.createElement('video');
             myVideo.muted = true;
+            const myPeer = new Peer(undefined, {
+                    host: '/',
+                    port: '3001'
+            });
             const peers = {};
 
+            // ========== WebCam ==========
+            navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                }).then(stream => {
+                    addVideoStream(myVideo, stream)
+                    myPeer.on('call', call => {
+                        call.answer(stream)
+                        const video = document.createElement('video')
+                        call.on('stream', userVideoStream => {
+                            addVideoStream(video, userVideoStream)
+                        })
+                    }, function(err) {
+                        console.log("Failed to get stream ", err)
+                    })
+
+                    socket.on('userCam-connected', userId => {
+                        connectToNewUser(userId, stream)
+                    })
+                })
+                // ========== WebCam ==========
+
+                socket.on('user-disconnected', userId => {
+                    if (peers[userId]) peers[userId].close()
+                })
+
+                myPeer.on('open', id => {
+                    let room = localStorage.getItem("room");
+                    socket.emit('joinCam', room, id)
+                    console.log("Este es mi id " + id + " y room " + room)
+                })
+
+
             function initScene() {
-                this.socket = io("http://localhost:3000", { autoConnect: false });
+                this.socket = socket
                 this.chatMessages = [];
                 this.otherPlayers = this.physics.add.group();
             }
@@ -116,40 +155,13 @@
                         chatBox.value = "";
                     }
                 });
-                this.myPeer = new Peer(undefined, {
-                    host: '/',
-                    port: '3001'
-                });
+                
                 let self = this;
-
-                // ========== WebCam ==========
-                navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true
-                }).then(stream => {
-                    addVideoStream(myVideo, stream)
-                    this.myPeer.on('call', call => {
-                        call.answer(stream)
-                        const video = document.createElement('video')
-                        call.on('stream', userVideoStream => {
-                            addVideoStream(video, userVideoStream)
-                        })
-                    }, function(err) {
-                        console.log("Failed to get stream ", err)
-                    })
-
-                    this.socket.on('userCam-connected', userId => {
-                        connectToNewUser(self, userId, stream)
-                    })
-                })
-                // ========== WebCam ==========
 
                 this.socket.connect();
                 this.socket.on("connect", async () => {
                     let room = localStorage.getItem("room");
-                    this.myPeer.on('open', id => {
-                        this.socket.emit('join', room, id)
-                    })
+                    this.socket.emit('join', room);
                 });
                 
                 this.socket.on("joined", (players, gameId) => {
@@ -172,10 +184,6 @@
                     console.log(this.otherPlayers, '------> otherPlayer');
                     console.log(this.player, '------> player');
                 });
-                
-                this.socket.on('user-disconnected', userId => {
-                    if (peers[userId]) peers[userId].close()
-                })
 
                 this.socket.on("message", (message) => {
                     this.chatMessages.push(message);
@@ -197,6 +205,8 @@
                         }
                     });
                 });
+
+                
 
                 this.socket.on('playerMoved', function (playerInfo) {
                     self.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -301,8 +311,8 @@
                 document.getElementById('whiteboard').style.display = "block";
             }
 
-            function connectToNewUser(self, userId, stream) {
-                const call = self.myPeer.call(userId, stream)
+            function connectToNewUser(userId, stream) {
+                const call = myPeer.call(userId, stream)
                 const video = document.createElement('video')
                 call.on('stream', userVideoStream => {
                     addVideoStream(video, userVideoStream)
