@@ -15,7 +15,7 @@ io.on("connection", (socket) => {
         playerAnim: {},
         gameId: ''
     };
-    socket.on("join", async (gameId) => {
+    socket.on("join", async (gameId, camId) => {
         try {
             console.log("user joined");
             socket.join(gameId);
@@ -23,10 +23,14 @@ io.on("connection", (socket) => {
 
             socket.emit("joined", players, gameId);
             players[socket.id].gameId = gameId;
+            socket.to(socket.activeRoom).broadcast.emit('userCam-connected', camId)
             socket.to(socket.activeRoom).broadcast.emit('newPlayer', players[socket.id]);
         } catch (err) {
             console.error(err);
         }
+        socket.on('camDisconnect', () => {
+            socket.to(socket.activeRoom).broadcast.emit('user-disconnected', camId)
+        })
     });
 
     socket.on('disconnect', function () {

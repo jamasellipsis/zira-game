@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script defer src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
@@ -33,6 +34,20 @@
                 WhiteBoard goes here
             </h2>
         </div>
+        <div id="video-grid"></div>
+        <style>
+            #video-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, 150px);
+              grid-auto-rows: 150px;
+            }
+            
+            video {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+        </style>
         <div id="game"></div>
         <script>
             const phaserConfig = {
@@ -60,12 +75,17 @@
 
             const game = new Phaser.Game(phaserConfig);
             let idGame;
+            const videoGrid = document.getElementById('video-grid')
+            const myVideo = document.createElement('video');
+            myVideo.muted = true;
+            const peers = {};
 
             function initScene() {
                 this.socket = io("http://localhost:3000", { autoConnect: false });
                 this.chatMessages = [];
                 this.otherPlayers = this.physics.add.group();
             }
+            
 
             function preloadScene() {
                 this.load.html("form", "form.html");
@@ -74,7 +94,7 @@
             }
 
             function createScene() {
-                this.textInput = this.add.dom(1200, 580).createFromCache("form").setOrigin(0.5);
+                this.textInput = this.add.dom(1200, 560).createFromCache("form").setOrigin(0.5);
                 this.chat = this.add.text(1065, 1, "", {
                     lineSpacing: 15,
                     backgroundColor: "#21313CDD",
@@ -96,13 +116,41 @@
                         chatBox.value = "";
                     }
                 });
+                this.myPeer = new Peer(undefined, {
+                    host: '/',
+                    port: '3001'
+                });
+                let self = this;
+
+                // ========== WebCam ==========
+                navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                }).then(stream => {
+                    addVideoStream(myVideo, stream)
+                    this.myPeer.on('call', call => {
+                        call.answer(stream)
+                        const video = document.createElement('video')
+                        call.on('stream', userVideoStream => {
+                            addVideoStream(video, userVideoStream)
+                        })
+                    }, function(err) {
+                        console.log("Failed to get stream ", err)
+                    })
+
+                    this.socket.on('userCam-connected', userId => {
+                        connectToNewUser(self, userId, stream)
+                    })
+                })
+                // ========== WebCam ==========
 
                 this.socket.connect();
                 this.socket.on("connect", async () => {
                     let room = localStorage.getItem("room");
-                    this.socket.emit("join", room);
+                    this.myPeer.on('open', id => {
+                        this.socket.emit('join', room, id)
+                    })
                 });
-                let self = this;
                 
                 this.socket.on("joined", (players, gameId) => {
                     this.chatMessages.push("Welcome to your class!");
@@ -124,6 +172,10 @@
                     console.log(this.otherPlayers, '------> otherPlayer');
                     console.log(this.player, '------> player');
                 });
+                
+                this.socket.on('user-disconnected', userId => {
+                    if (peers[userId]) peers[userId].close()
+                })
 
                 this.socket.on("message", (message) => {
                     this.chatMessages.push(message);
@@ -247,6 +299,26 @@
             function showWhiteboard() {
                 document.getElementById('game').style.display = "none";
                 document.getElementById('whiteboard').style.display = "block";
+            }
+
+            function connectToNewUser(self, userId, stream) {
+                const call = self.myPeer.call(userId, stream)
+                const video = document.createElement('video')
+                call.on('stream', userVideoStream => {
+                    addVideoStream(video, userVideoStream)
+                })
+                call.on('close', () => {
+                    video.remove()
+                })
+                peers[userId] = call
+            }
+
+            function addVideoStream(video, stream) {
+                video.srcObject = stream
+                video.addEventListener('loadedmetadata', () => {
+                    video.play()
+                })
+                videoGrid.append(video)
             }
         </script>
     </body>
