@@ -21,3 +21,11 @@ npm install -g serve
 ```sh
 serve
 ```
+* Install peer js
+```
+npm i -g peer
+```
+* And execute peer in another terminal:
+```
+peerjs --port 3001
+```
