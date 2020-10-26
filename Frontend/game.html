@@ -28,12 +28,12 @@
             <input type="button" value="Game" onclick="showGame();" />
             <input type="button" value="Whiteboard" onclick="showWhiteboard();" />
         </div>
-        <div id="game"></div>
         <div id="whiteboard">
             <h2>
                 WhiteBoard goes here
             </h2>
         </div>
+        <div id="game"></div>
         <script>
             const phaserConfig = {
                 type: Phaser.AUTO,
@@ -75,22 +75,18 @@
 
             function createScene() {
                 this.textInput = this.add.dom(1200, 580).createFromCache("form").setOrigin(0.5);
-                this.chat = this.add.text(1065, 10, "", {
+                this.chat = this.add.text(1065, 1, "", {
                     lineSpacing: 15,
                     backgroundColor: "#21313CDD",
                     color: "#40b9c1",
                     padding: 10,
                     fontStyle: "bold"
                 });
-                this.chat.setFixedSize(270, 645);
+                this.chat.setFixedSize(270, 535);
                 this.chat.setDepth(1);
 
                 // Player
                 this.bg = this.add.image(0, 0, 'bg').setOrigin(0, 0).setDisplaySize(1300, 600);
-                // this.player = this.physics.add.sprite(20, 20, 'player').setOrigin(0, 0)
-                //     .setDisplaySize(38, 42)
-                //     .setCollideWorldBounds(true);
-
                 let inputUsername = localStorage.getItem("username");
                 this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
                 this.enterKey.on("down", event => {
