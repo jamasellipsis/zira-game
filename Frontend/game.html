@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -18,6 +18,7 @@
                 <h1 class="light-text ml-3">Zira</h1>
                 <input type="button" value="Game" onclick="showGame();" class="btn btnZira mx-2 my-auto active" role="button" aria-pressed="true"/>
                 <input type="button" value="Whiteboard" onclick="showWhiteboard();" class="btn btnZira mx-2 my-auto active" role="button" aria-pressed="true"/>
+                <input type="button" value="Video Chat" onclick="showVideo();" class="btn btnZira mx-2 my-auto active" role="button" aria-pressed="true" />
             </div>
         </div>
         <div class="container-fluid">
@@ -27,19 +28,6 @@
         </div>
         
         <div id="video-grid"></div>
-        <style>
-            #video-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fill, 160px);
-              grid-auto-rows: 150px;
-            }
-            
-            video {
-              width: 100%;
-              height: 100%;
-              object-fit: contain;
-            }
-        </style>
         <div id="game"></div>
         
         <script>
@@ -292,15 +280,23 @@
                 self.otherPlayers.add(otherPlayer);
             }
 
-            // Show and hide Game, Whiteboard
+            // Show and hide Game, Whiteboard and Camera
             function showGame() {
                 document.getElementById('game').style.display = "block";
                 document.getElementById('whiteboard').style.display = "none";
+                document.getElementById('video-grid').style.display = "none";
             }
 
             function showWhiteboard() {
                 document.getElementById('game').style.display = "none";
                 document.getElementById('whiteboard').style.display = "block";
+                document.getElementById('video-grid').style.display = "none";
+            }
+
+            function showVideo() {
+                document.getElementById('game').style.display = "none";
+                document.getElementById('whiteboard').style.display = "none";
+                document.getElementById('video-grid').style.display = "block";
             }
 
             function connectToNewUser(userId, stream) {
