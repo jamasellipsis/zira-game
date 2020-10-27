@@ -23,6 +23,7 @@ h1 {
     width: 200px;
     float: left;
     text-align: center;
+    margin-top: 10px;
 }
 #whiteboard {
     display: none;
