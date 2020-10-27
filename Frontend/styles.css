@@ -46,4 +46,5 @@ video {
     border: 5px solid #40b9c1;
     transform: scaleX(-1);
     background-color: black;
+    margin-left: 20px;
 }
