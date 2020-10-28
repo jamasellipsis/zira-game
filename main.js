@@ -12,7 +12,6 @@ var ExpressPeerServer = require('peer').ExpressPeerServer;
 app.use('/peerjs', ExpressPeerServer(http, {debug: true}));
 
 app.use(cors());
-app.use(express.static('/'))
 app.get('/', function(req, res) {
     res.sendFile('game.html', { root: __dirname });
 })
