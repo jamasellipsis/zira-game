@@ -26,7 +26,7 @@ const url = window.location.href.split('_')
                 }
             }
 
-            const socket = io("http://https://zira-games.herokuapp.com:"+process.env.PORT, { autoConnect: false });
+            const socket = io("https://zira-games.herokuapp.com/game.html", { autoConnect: false });
             const game = new Phaser.Game(phaserConfig);
             let idGame;
             const videoGrid = document.getElementById('video-grid')
