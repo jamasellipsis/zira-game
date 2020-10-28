@@ -11,8 +11,6 @@ let players = {};
 var ExpressPeerServer = require('peer').ExpressPeerServer;
 app.use('/peerjs', ExpressPeerServer(http, {debug: true}));
 
-
-
 app.use(cors());
 app.use(express.static('Frontend'))
 app.get('/:user', function(req, res) {
@@ -68,7 +66,7 @@ io.on("connection", (socket) => {
     });
 });
 
-http.listen(3000, async () => {
+http.listen(process.env.PORT, async () => {
     try {
         console.log("Listening on port :%s", http.address().port);
     } catch (err) {
