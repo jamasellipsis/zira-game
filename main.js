@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
     });
 });
 
-http.listen(process.env.PORT , async () => {
+http.listen(3000, async () => {
     try {
         console.log("Listening on port :%s", http.address().port, "--->",app.get('port'));
     } catch (err) {
