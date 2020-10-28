@@ -26,7 +26,7 @@ const url = window.location.href.split('_')
                 }
             }
 
-            const socket = io("https://zira-games.herokuapp.com/game.html", { autoConnect: false });
+            const socket = io("http://localhost:33821", { autoConnect: false });
             const game = new Phaser.Game(phaserConfig);
             let idGame;
             const videoGrid = document.getElementById('video-grid')
@@ -34,7 +34,7 @@ const url = window.location.href.split('_')
             myVideo.muted = true;
             const myPeer = new Peer(undefined, {
                     host: '/',
-                    port: process.env.PORT,
+                    port: '33821',
                     path: '/peerjs'
             });
             const peers = {};
