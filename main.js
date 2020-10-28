@@ -2,6 +2,7 @@ const express = require("express");
 const app = express()
 const cors = require("cors");
 const { response } = require("express");
+const { get } = require("http");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 let players = {};
@@ -68,7 +69,7 @@ io.on("connection", (socket) => {
 
 http.listen(process.env.PORT , async () => {
     try {
-        console.log("Listening on port :%s", http.address().port);
+        console.log("Listening on port :%s", http.address().port, "--->",app.get('port'));
     } catch (err) {
         console.error(err);
     }
