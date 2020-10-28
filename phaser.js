@@ -26,7 +26,7 @@ const url = window.location.href.split('_')
                 }
             }
 
-            const socket = io("http://localhost:33821", { autoConnect: false });
+            const socket = io("http://localhost:",process.env.PORT, { autoConnect: false });
             const game = new Phaser.Game(phaserConfig);
             let idGame;
             const videoGrid = document.getElementById('video-grid')
@@ -34,7 +34,7 @@ const url = window.location.href.split('_')
             myVideo.muted = true;
             const myPeer = new Peer(undefined, {
                     host: '/',
-                    port: '33821',
+                    port: process.env.PORTs,
                     path: '/peerjs'
             });
             const peers = {};
